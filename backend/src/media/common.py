@@ -35,12 +35,30 @@ import srt
 from datetime import timedelta
 
 try:
-    import whisper as _whisper
+    # Finding the module is cheap; importing it loads torch (~300 MB RSS), so
+    # the real import waits for load_whisper(). AssemblyAI and YouTube-caption
+    # transcription never pay that cost, which keeps the API and worker small.
+    import importlib.util
 
-    _WHISPER_AVAILABLE = True
-except ImportError:  # pragma: no cover - optional transcription backend
-    _whisper = None
+    _WHISPER_AVAILABLE = importlib.util.find_spec("whisper") is not None
+except (ImportError, ValueError):  # pragma: no cover - optional transcription backend
     _WHISPER_AVAILABLE = False
+
+_whisper = None
+
+
+def load_whisper():
+    """Import and cache the Whisper module on first use."""
+
+    global _whisper
+    if _whisper is not None:
+        return _whisper
+    if not _WHISPER_AVAILABLE:
+        raise ImportError("Whisper is not installed. Install it with: uv add openai-whisper")
+    import whisper as module
+
+    _whisper = module
+    return module
 
 from ..config import get_config
 

@@ -22,7 +22,7 @@ from .common import (
     TRANSCRIPT_CACHE_SCHEMA_VERSION,
     _WHISPER_AVAILABLE,
     _WHISPER_MODEL_CACHE,
-    _whisper,
+    load_whisper,
     logger,
 )
 from .ffmpeg import (
@@ -182,7 +182,7 @@ def _get_whisper_model(model_name: str = "base"):
         )
     if model_name not in _WHISPER_MODEL_CACHE:
         logger.info("Loading Whisper model: %s", model_name)
-        _WHISPER_MODEL_CACHE[model_name] = _whisper.load_model(model_name)
+        _WHISPER_MODEL_CACHE[model_name] = load_whisper().load_model(model_name)
     return _WHISPER_MODEL_CACHE[model_name]
 
 
