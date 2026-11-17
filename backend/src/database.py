@@ -31,6 +31,10 @@ class Base(DeclarativeBase):
 
 
 def _build_engine(database_url: str) -> AsyncEngine:
+    # Managed Postgres providers (Render, Supabase, Heroku) hand out plain
+    # postgresql:// URLs; the async engine needs the driver named explicitly.
+    if database_url.startswith("postgresql://"):
+        database_url = "postgresql+asyncpg://" + database_url.removeprefix("postgresql://")
     pool_size = int(os.getenv("DATABASE_POOL_SIZE", "5"))
     max_overflow = int(os.getenv("DATABASE_MAX_OVERFLOW", "0"))
     pool_timeout = int(os.getenv("DATABASE_POOL_TIMEOUT_SECONDS", "10"))

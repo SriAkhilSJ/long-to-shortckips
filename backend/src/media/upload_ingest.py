@@ -69,6 +69,9 @@ def _fsync_file(path: Path) -> None:
     with path.open("rb+") as handle:
         handle.flush()
         os.fsync(handle.fileno())
+    # Windows cannot open a directory, so only POSIX fsyncs the entry itself.
+    if os.name == "nt":
+        return
     directory = os.open(path.parent, os.O_RDONLY)
     try:
         os.fsync(directory)

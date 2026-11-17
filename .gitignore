@@ -25,3 +25,9 @@ docs/youtube-provider-registry*.json
 
 # Local agent checkouts
 .claude/worktrees/
+
+# Native Windows dev stack (scripts/dev-local.ps1)
+.pgdata/
+.pgdata.log
+backend/uploads/
+backend/clips/

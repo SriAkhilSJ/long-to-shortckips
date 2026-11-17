@@ -187,11 +187,13 @@ def _place_missing_upload(existing_path: str, new_path: str) -> None:
             os.replace(temporary, target)
         finally:
             temporary.unlink(missing_ok=True)
-    directory = os.open(target.parent, os.O_RDONLY)
-    try:
-        os.fsync(directory)
-    finally:
-        os.close(directory)
+    # Windows cannot open a directory, so only POSIX fsyncs the entry itself.
+    if os.name != "nt":
+        directory = os.open(target.parent, os.O_RDONLY)
+        try:
+            os.fsync(directory)
+        finally:
+            os.close(directory)
 
 
 async def _restore_missing_upload(existing_path: str, storage_reference: str | None, new_path: str) -> None:
