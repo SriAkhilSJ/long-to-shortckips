@@ -49,6 +49,10 @@ COPY src/ ./src/
 COPY fonts/ ./fonts/
 COPY transitions/ ./transitions/
 
+# Start script for hosts that run the API and the worker in one container
+# (see render.yaml). Compose overrides the command, so it is unused there.
+COPY scripts/render-start.sh ./render-start.sh
+
 # Create necessary directories for video processing
 RUN mkdir -p /app/uploads /app/clips /app/logs /tmp
 
